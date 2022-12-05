@@ -2,12 +2,14 @@ const express = require('express');
 const app = express();
 const port = 3050;
 
-const indexsRouter = require("./routes/index.js");
-const connect = require("./schemas");
-connect();
+const indexsRouter = require("./routers/index.js");
+// const connect = require("./schemas");
+// connect();
+
+// const { User } = require("./models");
 
 app.use(express.json());
-app.use("/", indexsRouter);
+app.use("/api", indexsRouter);
 
 app.get('/', (req, res) => {
   res.send('Hyeju_nodejs_post');
