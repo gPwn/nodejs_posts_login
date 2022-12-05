@@ -9,6 +9,7 @@ const indexsRouter = require("./routers/index.js");
 // const { User } = require("./models");
 
 app.use(express.json());
+app.use(express.static("assets"));
 app.use("/api", indexsRouter);
 
 app.get('/', (req, res) => {
