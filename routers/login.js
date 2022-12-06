@@ -1,5 +1,5 @@
 // const { Op } = require("sequelize");
-const { User } = require("../models");
+const { Login } = require("../models");
 const jwt = require("jsonwebtoken");
 
 // 로그인 구현 mysql

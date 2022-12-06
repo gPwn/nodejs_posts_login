@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const commentsRouter = require("./comments.js");
-const postsRouter = require("./posts.js");
+// const commentsRouter = require("./comments.js");
+// const postsRouter = require("./posts.js");
 const loginRouter = require("./login.js");
 const signupRouter = require("./signup.js");
 
