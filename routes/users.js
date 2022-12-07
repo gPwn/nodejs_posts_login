@@ -80,8 +80,7 @@ router.post("/login", async (req, res) => {
   try {
     const { nickname , password } = req.body;
 
-    const user = await Users.findOne({
-      where: { nickname }});
+    const user = await Users.findOne({ where: { nickname }});
 
       // NOTE: 인증 메세지는 자세히 설명하지 않는것을 원칙으로 한다: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#authentication-responses
       if (!user || password !== user.password) {
@@ -91,7 +90,7 @@ router.post("/login", async (req, res) => {
         return;
       };
 
-      console.log(user)
+      // console.log(user)
       const accessToken = createAccessToken(user.UserId);
       // console.log(accessToken);
   
