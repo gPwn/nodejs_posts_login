@@ -1,28 +1,36 @@
 const jwt = require("jsonwebtoken");
-const { User } = require("../models");
+const { Users } = require("../models");
+require("dotenv").config();
 
-const AuthMiddleWares = (req, res, next) => {
-  const { authorization } = req.headers;
+module.exports = async (req, res, next) => {
+  const authorization = req.headers.cookie;
+  // console.log(authorization);
   const [authType, authToken] = (authorization || "").split(" ");
+  const accessToken = (authType.split("=")[1]).slice(0,-1);
+  const refreshToken = (authToken.split("=")[1]);
+  console.log(accessToken);
 
-  if (!authToken || authType !== "Bearer") {
+  if (!accessToken || !refreshToken) {
     res.status(401).send({
-      errorMessage: "로그인 후 이용 가능한 기능입니다.",
+      errorMessage: "로그인 후 이용 가능한 기능입니다1.",
     });
     return;
   }
 
   try {
-    const { userId } = jwt.verify(authToken, "customized-secret-key");
-    User.findByPk(userId).then((user) => {
+    const { UserId }  = jwt.verify(accessToken, process.env.SECRET_KEY );
+    console.log(UserId);
+    await Users.findOne({
+      where: { UserId },
+      attributes: { exclude: ["password"] }})
+      .then((user) => {
       res.locals.user = user;
       next();
     });
-  } catch (err) {
+  } catch (error) {
+    console.log(error);
     res.status(401).send({
       errorMessage: "로그인 후 이용 가능한 기능입니다.",
     });
   }
 };
-
-module.exports = AuthMiddleWares;
