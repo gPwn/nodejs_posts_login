@@ -7,6 +7,10 @@ app.use(express.json());
 const indexsRouter = require("./routes/index.js");
 app.use("/api", indexsRouter);
 
+app.get('/', (req, res) => {
+  res.send('Hyeju_Main_Api_nodejs_post');
+});
+
 app.listen(port, () => {
   console.log(port, '포트로 서버가 열렸어요!');
 });
