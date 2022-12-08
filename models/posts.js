@@ -60,5 +60,11 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Posts',
   });
+  Posts.associate = function (models) {
+    models.Likes.hasMany(models.Likes, {
+      foreignKey: 'LikeId',
+      onDelete: 'cascade',
+    });
+  };
   return Posts;
 };

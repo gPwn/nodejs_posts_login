@@ -1,10 +1,12 @@
-{
-  "development": {
-    "username": "root",
-    "password": "4321aaaa",
-    "database": "post_login",
-    "host": "express-database.clqcjdlnlpyj.ap-northeast-2.rds.amazonaws.com",
-    "dialect": "mysql"
+require('dotenv').config();
+module.exports = {
+  development: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_END_POINT,
+    port : process.env.DB_PORT,
+    dialect : "mysql"
   },
   "test": {
     "username": "root",

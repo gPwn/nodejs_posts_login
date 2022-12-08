@@ -4,18 +4,14 @@ require("dotenv").config();
 
 module.exports = async (req, res, next) => {
   const authorization = req.headers.cookie;
-  // console.log(authorization);
-  // const [authType,authToken] = (authorization || "").split(" ");
-  const accessToken = (authorization.split("=")[1]);
-  // const refreshToken = (authToken.split("=")[1]);
-  // console.log(accessToken);
 
-  if (!accessToken) {
-    res.status(401).send({
-      errorMessage: "로그인 후 이용 가능한 기능입니다1.",
+  if (!authorization) {
+    return res.status(401).send({
+      errorMessage: "로그인 후 이용 가능한 기능입니다.",
     });
-    return;
   }
+
+  const accessToken = (authorization.split("=")[1]);
 
   try {
     const { UserId }  = jwt.verify(accessToken, process.env.SECRET_KEY );

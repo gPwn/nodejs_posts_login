@@ -4,9 +4,9 @@ const { Op } = require("sequelize");
 
 // post 객체의 형식 가져오기
 const { Posts } = require("../models");
+const { Likes } = require("../models");
+const { Users } = require("../models");
 const authMiddlewares = require("../middlewares/authMiddlewares.js");
-
-
 
 // 게시글 작성
 router.post('/', authMiddlewares, async (req, res) => {
@@ -55,26 +55,30 @@ router.get("/", async (req, res) => {
 });
 
 //게시글 상세 조회
-router.get("/:postId", async (req, res) => {
-    try {
-        const { postId } = req.params;
-        
-        const post = await Posts.findOne({ where: {postId : postId} });
-        // console.log(post);
-        const result = {
-            postId : post.postId,
-            userId : post.userId,
-            nickname : post.nickname,
-            title : post.title,
-            content : post.content,
-            createdAt : post.createdAt,
-            updatedAt : post.updatedAt
+router.get("/:postId", async (req, res, next) => {
+    const { postId } = req.params;
+
+    if (postId === "like") {
+        next();
+    } else {
+        try {        
+            const post = await Posts.findOne({ where: {postId : postId} });
+            // console.log(post);
+            const result = {
+                postId : post.postId,
+                userId : post.userId,
+                nickname : post.nickname,
+                title : post.title,
+                content : post.content,
+                createdAt : post.createdAt,
+                updatedAt : post.updatedAt
+            }
+            // console.log(post);
+            return res.status(200).json({data : result});
+        } catch (error) {
+            return res.status(400).json({errorMessage: "게시글 조회에 실패하였습니다."})
         }
-        // console.log(post);
-        res.status(200).json({data : result});
-    } catch (error) {
-        res.status(400).json({errorMessage: "게시글 조회에 실패하였습니다."})
-    }
+    };
 });
 
 //게시글 수정
@@ -140,5 +144,154 @@ router.delete("/:postId", authMiddlewares, async (req,res) => {
     }
 });
 
+
+//likes
+// router.get("/like", authMiddlewares, async (req, res) => {
+//     try {
+//       const { user } = res.locals;
+//       const data = await Likes.findAll({
+//         where: { userId: user.userId },
+//         include: [
+//           {
+//             model: Posts,
+//             attributes: { exclude: ["content", "postId"] },
+//             include: [
+//               { model: Likes, as: "Likes", attributes: ["likeId"] },
+//               { model: Users, attributes: ["nickname"] },
+//             ],
+//           },
+//         ],
+//       });
+//       let posts = [];
+//       data.forEach((e) => {
+//         posts.push({
+//           postId: e.postId,
+//           userId: e.Post.UserId,
+//           nickname: e.Post.User.nickname,
+//           title: e.Post.title,
+//           createdAt: e.createdAt,
+//           updatedAt: e.updatedAt,
+//           likes: e.Post.Likes.length,
+//         });
+//       });
+//       posts.sort((a, b) => b.likes - a.likes);
+  
+//       return res.status(200).json({ data: posts });
+//     } catch (err) {
+//       console.log(err);
+//       return res.status(400).send({ errorMessage: "catch 블럭의 매뉴얼 에러" });
+//     }
+//   });
+// router.get('/like', authMiddlewares, async (req, res) => {
+//     const { UserId, postId, nickname, title, createdAt, updatedAt } = res.locals.user;
+//     console.log({ UserId, postId, nickname, title, createdAt, updatedAt, Likes })
+//     // let userLikes = await Likes.findAll({
+//     //     where: { UserId },
+//     //   });
+//     // console.log(userLikes)
+//     res.send('Hyeju_Api_nodejs_post');
+// });
+// router.get('/like' , authMiddlewares, async (req, res) => {
+//     try {
+//       const { UserId } = res.locals.user;
+
+//       let userLikes = await Likes.findAll({
+//         where: { UserId },
+//       });
+
+//       const postsQuery = `
+//                 SELECT p.postId, u.userId, u.nickname, p.title, p.createdAt, p.updatedAt
+//                 FROM Posts AS p
+//                 JOIN Users AS u
+//                 ON p.UserId = u.UserId
+//                 ORDER BY p.postId DESC`;
+
+
+//         const getLikePostIdByLikes = (likes) => {
+//             let likePostIdArray = [];
+//             for (const like of likes) {
+//                 likePostIdArray.push(like.postId);
+//             }
+
+//       let posts = await sequelize
+//         .query(postsQuery, {
+//           type: Sequelize.QueryTypes.SELECT,
+//         })
+//         .then((posts) => getPostsByPostIdArray(likePostIdArray, posts));
+
+//         return likePostIdArray;
+//       }
+
+//       const likes = await Likes.findAll();
+
+//       let posts = posts.map((post) => {
+//         return {
+//           ...post,
+//           likes: likes.filter((like) => like.postId === post.postId).length,
+//         };
+//       });
+
+//       posts.sort((a, b) => b.createdAt - a.createdAt);
+//       posts.sort((a, b) => b.likes - a.likes);
+
+//       return res.status(200).json({
+//         data: posts,
+//       });
+//     } catch (error) {
+//         console.log(error);
+//       console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
+//       return res.status(400).json({
+//         errorMessage: '좋아요 게시글 조회에 실패하였습니다.',
+//       });
+//     }
+//   });
+
+// router.put('/:postId/like', authMiddlewares, async (req, res) => {
+//     // try {
+//         const { postId } = req.params;
+//         const { UserId } = res.locals.user;
+//         // console.log(postId, UserId)
+//         // const isExist = await Posts.findByPk(postId);
+//         const isExist = await Posts.findOne({
+//             where: {
+//                 [Op.or] : [{postId : postId}]
+//             },
+//         });
+        
+//         if (!isExist) {
+//           return res.status(404).json({
+//             errorMessage: '게시글이 존재하지 않습니다.',
+//           });
+//         }
+  
+//         let isLike = await Likes.findOne({
+//           where: { postId, UserId },
+//         });
+//         console.log(isLike);
+//         res.send();
+  
+//         // if (!isLike) {
+//         //   await Likes.create({ postId, UserId });
+  
+//         //   return res
+//         //     .status(200)
+//         //     .json({ message: '게시글의 좋아요를 등록하였습니다.' });
+//         // } else {
+//         //   await Likes.destroy({
+//         //     where: { postId, UserId },
+//         //   });
+  
+//         //   return res
+//         //     .status(200)
+//         //     .json({ message: '게시글의 좋아요를 취소하였습니다.' });
+//         // }
+//     //   } catch (error) {
+//     //     console.log(error);
+//     //     console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
+//     //     return res.status(400).json({
+//     //       errorMessage: '게시글 좋아요에 실패하였습니다.',
+//     //     });
+//     // }
+// });
 
 module.exports = router;
