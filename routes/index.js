@@ -6,6 +6,7 @@ const postsRouter = require("./posts.js");
 const commentsRouter = require("./comments.js");
 
 router.use("/", UserRouter);
+router.use("/posts", require("./likes.js"));
 router.use("/posts", postsRouter);
 router.use("/comments", commentsRouter);
 

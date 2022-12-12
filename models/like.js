@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Like extends Model {
+  class Likes extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -14,22 +14,40 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Posts, { foreignKey: "postId" });
     }
   }
-  Like.init(
+  Likes.init(
     {
     likeId: {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
     userId: {
-      type: DataTypes.STRING,
-      require : true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "Users",
+        key: "userId",
+      },
+      onDelete: "cascade",
     },
     postId: {
       type: DataTypes.INTEGER,
-      require : true,
+      allowNull: false,
+      references: {
+        model: "Posts",
+        key: "postId",
+      },
+      onDelete: "cascade",
     },
-    like :{
+    likes :{
       type: DataTypes.INTEGER,
+    },
+    nickname : {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    title : {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     createdAt: {
       allowNull: false,
@@ -45,5 +63,17 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Likes',
   });
-  return Like;
+  // Likes.associate = function (models) {
+  //   models.Posts.hasMany(models.Posts, {
+  //     foreignKey: 'postId',
+  //     onDelete: 'cascade',
+  //   });
+  // };
+  // Likes.associate = function (models) {
+  //   models.Users.hasMany(models.Users, {
+  //     foreignKey: 'userId',
+  //     onDelete: 'cascade',
+  //   });
+  // };
+  return Likes;
 };

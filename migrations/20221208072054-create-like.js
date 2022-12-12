@@ -10,11 +10,11 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER
       },
       userId: {
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
         references: {
           model: "Users",
-          key: "nickname",
+          key: "userId",
         },
       },
       postId: {
@@ -25,8 +25,17 @@ module.exports = {
           key: "postId",
         },
       },
-      like :{
+      likes :{
         type: Sequelize.DataTypes.INTEGER,
+        allowNull: false,
+      },
+      nickname : {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
+      },
+      title : {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

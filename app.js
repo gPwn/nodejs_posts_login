@@ -4,6 +4,9 @@ const port = 3050;
 
 app.use(express.json());
 
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 const indexsRouter = require("./routes/index.js");
 app.use("/api", indexsRouter);
 

@@ -3,6 +3,7 @@
 const {
   Model
 } = require('sequelize');
+// const { Users, Posts, Likes} = require("./");
 module.exports = (sequelize, DataTypes) => {
   class Posts extends Model {
     /**
@@ -12,6 +13,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // this.belongsTo(models.Like, { foreignKey: "likes" });
+      this.belongsTo(models.Users, { foreignKey: "userId" });
+      this.belongsTo(models.Users, { foreignKey: "nickname" });
     }
   }
   Posts.init({
@@ -46,6 +50,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    // likes :{
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    // },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
@@ -60,11 +68,11 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Posts',
   });
-  Posts.associate = function (models) {
-    models.Likes.hasMany(models.Likes, {
-      foreignKey: 'LikeId',
-      onDelete: 'cascade',
-    });
-  };
+  // Posts.associate = function (models) {
+  //   models.Posts.hasMany(models.Users, {
+  //     foreignKey: 'userId',
+  //     onDelete: 'cascade',
+  //   });
+  // };
   return Posts;
 };

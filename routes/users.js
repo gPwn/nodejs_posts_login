@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
-// const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { Users } = require("../models");
+const { Op } = require("sequelize")
 require("dotenv").config();
-
+const authLoginUserMiddlewares = require("../middlewares/authLoginUserMiddlewares.js");
 
 //회원가입
-router.post("/signup", async (req, res) => {
+router.post("/signup", authLoginUserMiddlewares, async (req, res) => {
   try{
     // - 닉네임, 비밀번호, 비밀번호 확인을 request에서 전달받기
     const { nickname, password, confirm } = req.body;
@@ -71,16 +71,16 @@ router.get("/signup", async (req, res) => {
 
 
 //로그인
-router.post("/login", async (req, res) => {
-  function createAccessToken(id) {
-    return jwt.sign({ UserId: id }, process.env.SECRET_KEY, {
-      expiresIn: "3d",
-    });
-  }
+router.post("/login",authLoginUserMiddlewares, async (req, res) => {
   try {
     const { nickname , password } = req.body;
 
-    const user = await Users.findOne({ where: { nickname }});
+    const user = await Users.findOne({ 
+      where: { 
+        [Op.and]: [{ nickname }, { password }],
+       }
+      });
+      // console.log(user)
 
       // NOTE: 인증 메세지는 자세히 설명하지 않는것을 원칙으로 한다: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#authentication-responses
       if (!user || password !== user.password) {
@@ -90,14 +90,14 @@ router.post("/login", async (req, res) => {
         return;
       };
 
-      // console.log(user)
-      const accessToken = createAccessToken(user.UserId);
-      // console.log(accessToken);
+      const token = jwt.sign(
+        { userId: user.userId }, 
+        process.env.SECRET_KEY, {
+        expiresIn: "3d",
+      });
   
-      res.cookie("accessToken", accessToken);
-
-      const token = jwt.sign({ userId: user.UserId }, process.env.SECRET_KEY);
-      res.send({token: token});
+      res.cookie(process.env.COOKIE_NAME, `Bearer ${token}`);
+      return res.status(200).json({token});
   } catch (error) {
     console.log(error);
     res.status(400).send({ errorMessage : "로그인에 실패하였습니다."});
