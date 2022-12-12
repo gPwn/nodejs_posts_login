@@ -16,7 +16,7 @@ module.exports = async (req, res, next) => {
 
   try {
     const { userId }  = jwt.verify(accessToken, process.env.SECRET_KEY);
-    // console.log(userId);
+    console.log(userId);
     await Users.findOne({
       where: { userId },
       attributes: { exclude: ["password"] }})

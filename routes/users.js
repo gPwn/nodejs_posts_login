@@ -91,7 +91,7 @@ router.post("/login",authLoginUserMiddlewares, async (req, res) => {
       };
 
       const token = jwt.sign(
-        { userId: user.userId }, 
+        { userId: user.userId },  
         process.env.SECRET_KEY, {
         expiresIn: "3d",
       });
